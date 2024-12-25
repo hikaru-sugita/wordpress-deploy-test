@@ -1,4 +1,4 @@
-name: Deploy WordPress to EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -13,34 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy WordPress to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            set -e
-
-            # デプロイ前のバックアップ作成
-            timestamp=$(date +%Y%m%d%H%M%S)
-            sudo tar --transform='s,^/,,' -czf /var/www/html_backup_$timestamp.tar.gz /var/www/html/
-
-            # 必要なファイルのみを同期
-            rsync -avz --delete \
-              --exclude 'wp-content/uploads/' \
-              --exclude 'wp-content/cache/' \
-              --exclude 'wp-admin/' \
-              --exclude 'wp-includes/' \
-              --rsync-path="sudo rsync" \
-              ./ /var/www/html/
-
-            # キャッシュの削除（必要に応じて）
-            sudo rm -rf /var/www/html/wp-content/cache/*
-
-            # 権限設定
-            sudo chown -R www-data:www-data /var/www/html
-            sudo chmod -R 755 /var/www/html
-
-            # Apache再起動
-            sudo systemctl restart apache2
+            cd /var/www/html/wordpress
+            git pull origin main
+            chown -R www-data:www-data /var/www/html/wordpress
