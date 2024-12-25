@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Deploy WordPress to EC2
         uses: appleboy/ssh-action@v0.1.5
@@ -26,10 +26,10 @@ jobs:
             timestamp=$(date +%Y%m%d%H%M%S)
             sudo tar --transform='s,^/,,' -czf /var/www/html_backup_$timestamp.tar.gz /var/www/html/
 
-            # リポジトリ全体を同期しつつ、uploadsを保護
-            rsync -avz --delete --exclude 'wp-content/uploads/' ./ /var/www/html/
+            # wp-content全体を同期しつつ、uploadsディレクトリを保護
+            rsync -avz --delete --exclude 'wp-content/uploads/' --rsync-path="sudo rsync" ./ /var/www/html/
 
-            # キャッシュを削除（必要に応じて）
+            # キャッシュの削除（必要に応じて）
             sudo rm -rf /var/www/html/wp-content/cache/*
 
             # 権限設定
