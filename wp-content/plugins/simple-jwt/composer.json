@@ -1,0 +1,11 @@
+{
+    "name": "hikaru.sugita/simple-jwt",
+    "autoload": {
+        "psr-4": {
+            "HikaruSugita\\SimpleJwt\\": "src/"
+        }
+    },
+    "require": {
+        "firebase/php-jwt": "^6.10"
+    }
+}

@@ -8,12 +8,6 @@
 wp-content/uploads/
 wp-content/cache/
 
-# Third-party plugins and themes
-wp-content/plugins/*
-!wp-content/plugins/<your-plugin-name>/
-wp-content/themes/*
-!wp-content/themes/<your-theme-name>/
-
 # Logs and debug files
 debug.log
 *.log
