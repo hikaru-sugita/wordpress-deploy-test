@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy WordPress to EC2
 
 on:
   push:
@@ -20,14 +20,16 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            # デプロイ用ディレクトリに移動
-            cd /var/www/html
+            set -e
 
-            # 必要なディレクトリを同期
-            rsync -avz --delete ./wp-content/themes/ /var/www/html/wp-content/themes/
-            rsync -avz --delete ./wp-content/plugins/ /var/www/html/wp-content/plugins/
+            # デプロイ前のバックアップ作成
+            timestamp=$(date +%Y%m%d%H%M%S)
+            sudo tar -czf /var/www/html_backup_$timestamp.tar.gz /var/www/html/
 
-            # キャッシュの削除（必要に応じて）
+            # wp-content全体を同期しつつ、uploadsを保護
+            rsync -avz --delete --exclude 'uploads/' wp-content/ /var/www/html/wp-content/
+
+            # キャッシュを削除（必要に応じて）
             sudo rm -rf /var/www/html/wp-content/cache/*
 
             # 権限設定
