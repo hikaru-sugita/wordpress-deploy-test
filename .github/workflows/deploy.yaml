@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy WordPress to EC2
 
 on:
   push:
@@ -20,6 +20,25 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
+            set -e
+
+            # Gitリポジトリが存在しない場合はクローン
+            if [ ! -d "/var/www/html/.git" ]; then
+              sudo rm -rf /var/www/html/*
+              git clone https://github.com/<your-repo>.git /var/www/html
+            fi
+
+            # リポジトリを更新
             cd /var/www/html
+            git reset --hard
             git pull origin main
-            chown -R www-data:www-data /var/www/html
+
+            # 動的なデータを保護（必要に応じて）
+            sudo rm -rf wp-content/cache/*
+
+            # 権限設定
+            sudo chown -R www-data:www-data /var/www/html
+            sudo chmod -R 755 /var/www/html
+
+            # Apache再起動
+            sudo systemctl restart apache2
