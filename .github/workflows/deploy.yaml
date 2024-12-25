@@ -27,7 +27,7 @@ jobs:
             sudo tar --transform='s,^/,,' -czf /var/www/html_backup_$timestamp.tar.gz /var/www/html/
 
             # wp-content全体を同期しつつ、uploadsディレクトリを保護
-            rsync -avz --delete --exclude 'wp-content/uploads/' --rsync-path="sudo rsync" ./ /var/www/html/
+            rsync -avz --delete --exclude 'wp-content/uploads/' --rsync-path="sudo rsync" --no-g ./ /var/www/html/
 
             # キャッシュの削除（必要に応じて）
             sudo rm -rf /var/www/html/wp-content/cache/*
