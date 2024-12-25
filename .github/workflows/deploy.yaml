@@ -22,19 +22,18 @@ jobs:
           script: |
             set -e
 
-            # Gitリポジトリが存在しない場合はクローン
-            if [ ! -d "/var/www/html/.git" ]; then
+            # Gitリポジトリがすでに存在する場合はpull、存在しない場合はクローン
+            if [ -d "/var/www/html/.git" ]; then
+              cd /var/www/html
+              git reset --hard
+              git pull origin main
+            else
               sudo rm -rf /var/www/html/*
               git clone https://github.com/hikaru-sugita/wordpress-deploy-test.git /var/www/html
             fi
 
-            # リポジトリを更新
-            cd /var/www/html
-            git reset --hard
-            git pull origin main
-
             # 動的なデータを保護（必要に応じて）
-            sudo rm -rf wp-content/cache/*
+            sudo rm -rf /var/www/html/wp-content/cache/*
 
             # 権限設定
             sudo chown -R www-data:www-data /var/www/html
