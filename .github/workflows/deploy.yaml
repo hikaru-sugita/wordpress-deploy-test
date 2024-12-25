@@ -22,15 +22,16 @@ jobs:
           script: |
             set -e
 
-            # Gitリポジトリが存在する場合はpull、存在しない場合はクローン
+            # Gitリポジトリが既に存在する場合はpull、存在しない場合はクローン
             if [ -d "/var/www/html/.git" ]; then
               echo "Git repository found. Pulling latest changes..."
               cd /var/www/html
               git reset --hard
               git pull origin main
             else
-              echo "No Git repository found. Cloning the repository..."
+              echo "No Git repository found. Resetting directory and cloning..."
               sudo rm -rf /var/www/html/*
+              sudo rm -rf /var/www/html/.git
               git clone https://github.com/hikaru-sugita/wordpress-deploy-test.git /var/www/html
             fi
 
